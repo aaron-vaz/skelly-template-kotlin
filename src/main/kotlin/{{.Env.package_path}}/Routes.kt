@@ -6,13 +6,19 @@ import io.ktor.server.routing.get
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Status(val status: String)
+data class Status(
+    val status: String,
+)
 
 @Serializable
-data class VersionInfo(val version: String)
+data class VersionInfo(
+    val version: String,
+)
 
 @Serializable
-data class ErrorResponse(val error: String)
+data class ErrorResponse(
+    val error: String,
+)
 
 fun Route.healthRoutes(version: String) {
     get("/healthz") { call.respond(Status("ok")) }

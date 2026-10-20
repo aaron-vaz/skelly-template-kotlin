@@ -39,6 +39,21 @@ class ItemsTest {
         }
 
     @Test
+    fun `malformed json is a bad request and not a server error`() =
+        testApplication {
+            application { module(testConfig()) }
+
+            val response =
+                client.post("/items") {
+                    contentType(ContentType.Application.Json)
+                    setBody("{nope")
+                }
+
+            assertEquals(HttpStatusCode.BadRequest, response.status)
+            assertEquals("""{"error":"invalid request"}""", response.bodyAsText())
+        }
+
+    @Test
     fun `a blank name is rejected and nothing is stored`() =
         testApplication {
             application { module(testConfig()) }

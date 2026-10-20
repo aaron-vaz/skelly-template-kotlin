@@ -15,10 +15,15 @@ object Items : Table("items") {
 }
 
 @Serializable
-data class Item(val id: Int, val name: String)
+data class Item(
+    val id: Int,
+    val name: String,
+)
 
 @Serializable
-data class NewItem(val name: String)
+data class NewItem(
+    val name: String,
+)
 
 fun listItems(database: Database): List<Item> =
     transaction(database) {

@@ -1,7 +1,6 @@
 package {{.Inputs.package.Value}}
 
 {{if eq .Inputs.database.Value "sqlite"}}import kotlin.io.path.createTempFile
-import kotlin.io.path.deleteIfExists
 
 {{end}}/**
  * A configuration for tests: the port is not used, as tests do not listen on one.

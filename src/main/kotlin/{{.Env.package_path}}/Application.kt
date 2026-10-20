@@ -8,6 +8,7 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
@@ -27,6 +28,10 @@ fun Application.module(config: Config) {
     install(ContentNegotiation) { json() }
     install(CallLogging)
     install(StatusPages) {
+        exception<BadRequestException> { call, cause ->
+            logger.debug("Bad request on {}", call.request.local.uri, cause)
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("invalid request"))
+        }
         exception<Throwable> { call, cause ->
             logger.error("Unhandled error on {}", call.request.local.uri, cause)
             call.respond(HttpStatusCode.InternalServerError, ErrorResponse("internal server error"))
