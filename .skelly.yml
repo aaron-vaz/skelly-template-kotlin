@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/aaron-vaz/skelly/main/skelly.schema.json
+name: skelly-template-kotlin
+description: A Kotlin web service on Ktor, with optional Exposed and SQLite, Gradle, ktlint, tests, CI and releases
+inputs:
+  project_name:
+    description: The name of the project, also used as the Gradle project and the start script (kebab-case, e.g. my-service)
+  owner:
+    description: The GitHub user or organisation that will own the repository
+    default: aaron-vaz
+  package:
+    description: The Kotlin package of {{.Inputs.project_name.Value}}, its source directories are derived from it
+    default: 'io.github.{{.Inputs.owner.Value | lower | replace "-" ""}}.{{.Inputs.project_name.Value | lower | replace "-" ""}}'
+  database:
+    description: Whether the service needs a database, sqlite adds Exposed with SQLite and an example items API
+    default: none
+    choices: [none, sqlite]
+  java_version:
+    description: The JDK version to build and run with
+    default: "21"
+# Values for templates to use as .Env.name, derived from the inputs
+env:
+  package_path: '{{replace "." "/" .Inputs.package.Value}}'
+# Workflows and the Gradle wrapper use ${{ }} or $ themselves, so they are copied as-is
+raw:
+  - github
+  - gradlew
+  - gradlew.bat
+  - gradle/wrapper
+# Everything that only applies to one kind of project, plus the template's own files.
+# Patterns match the template's own names: the package directory is {{.Env.package_path}}, so it is a * here
+exclude:
+  - when: '{{ne .Inputs.database.Value "sqlite"}}'
+    paths:
+      - src/*/kotlin/*/db
+  - paths:
+      - TEMPLATE.md
+      - .github
+# The files for generated projects ship as github/, so GitHub does not run them (or
+# Dependabot) in this repository, where the real .github holds the template's own CI
+rename:
+  - from: github
+    to: .github
