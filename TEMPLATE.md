@@ -1,13 +1,18 @@
 # skelly-template-kotlin
 
-A [skelly](https://github.com/aaron-vaz/skelly) template for Kotlin web services on Ktor, with optional Exposed and SQLite.
+A [skelly](https://github.com/aaron-vaz/skelly) template for modular Kotlin services on Ktor, with an optional domain on Exposed and SQLite.
 
 | `database` | You get |
 |---|---|
-| `none` | Ktor with Netty, JSON, call logging, error handling, `/healthz`, `/readyz` and `/version`, env-based config and tests |
-| `sqlite` | The same plus [Exposed](https://www.jetbrains.com/help/exposed/) on SQLite with an example `items` table, repository functions, `/items` routes, tests and a data volume in the Dockerfile |
+| `none` | `server` (the assembly) and a `greetings` example domain module: Ktor on Netty, JSON, error handling, ops routes (`/healthz`, `/readyz`, `/version`), env-based config and tests |
+| `sqlite` | The same plus an `items` domain module that owns its data: [Exposed](https://www.jetbrains.com/help/exposed/) on SQLite, `GET`/`POST /items`, tests, and a `/data` volume in the image |
 
-Both come with Gradle (Kotlin DSL, version catalog, wrapper), ktlint, warnings as errors, a Dockerfile, CI, release-please, Dependabot and an `AGENTS.md`.
+Both come with:
+
+- **Convention plugins** in `buildSrc` (`kotlin-conventions`, `ktor-conventions`, `application-conventions`, `exposed-conventions`) and one **version catalog** that the modules and the plugins share.
+- **Log4j 2** as the logging API and implementation, with the SLF4J bridge for Ktor and Netty.
+- **Spotless** running **ktlint**, with the rules in `.editorconfig`, and warnings as errors.
+- A **distroless image built by Jib** (no Dockerfile, no Docker needed to build a tarball), plus CI, release-please, Dependabot, an `AGENTS.md` and a `.jabbarc` for [jabba](https://github.com/Jabba-Team/jabba).
 
 ## Usage
 
@@ -16,7 +21,7 @@ skelly sources add kotlin github.com/aaron-vaz/skelly-template-kotlin
 skelly init kotlin -dst ./my-service
 ```
 
-Inputs: `database` (`none` or `sqlite`, default `none`), `java_version` (default `21`), `owner` (default `aaron-vaz`), `package` (default derived from `owner` and `project_name`, e.g. `io.github.aaronvaz.myservice`) and `project_name` (required, kebab-case).
+Inputs: `database` (`none` or `sqlite`, default `none`), `java_version` (`17`, `21` or `25`, default `21`: the versions with a distroless Java image), `owner` (default `aaron-vaz`), `package` (default derived from `owner` and `project_name`, e.g. `io.github.aaronvaz.myservice`) and `project_name` (required, kebab-case).
 
 From a script or an AI agent:
 
@@ -29,20 +34,20 @@ skelly init kotlin -dst ./my-service -no-input -set project_name=my-service -set
 
 `.skelly.yml` uses several skelly features to produce both variants from one tree:
 
-- `choices` on `database`, so a typo is rejected instead of producing a half-empty project.
+- `choices` on `database` and `java_version`, so a typo is rejected.
 - a templated `package` default, built from `owner` and `project_name` with the `lower` and `replace` template functions, and an `env` value `package_path` (`io.github.me.app` becomes `io/github/me/app`) used in the names of the source directories.
-- an `exclude` entry that removes the `db` package, with its tests, unless `database` is `sqlite`. Patterns use the template's own names, so the package directory (`{{.Env.package_path}}`) is a `*` there.
+- an `exclude` entry that removes the `items` module, the test of it in `server`, and the Jib directory for `/data`, unless `database` is `sqlite`. Patterns use the template's own names, so the package directory (`{{.Env.package_path}}`) is a `*` there. The `include` line, the dependency and the wiring are `{{if}}` blocks.
 - `rename`, which moves `github/` to `.github` when the project is generated. The workflows and `dependabot.yml` for generated projects live in `github/`, so GitHub does not run them, and Dependabot does not read them, in this repository. The real `.github/` here holds only the template's own CI.
 
-`github`, `gradlew`, `gradlew.bat` and `gradle/wrapper` are `raw`: they use `${{ }}` or `$` themselves. The JDK version reaches the workflows through `.java-version`, which `setup-java` reads, since raw files cannot use inputs. A `.jabbarc` (`temurin@~21` for `java_version` 21) lets [jabba](https://github.com/Jabba-Team/jabba) users run `jabba use` in the project.
+`github`, `gradlew`, `gradlew.bat` and `gradle/wrapper` are `raw`: they use `${{ }}` or `$` themselves. The JDK reaches the workflows and the build through `.java-version`, since raw files cannot use inputs.
 
 When you edit a workflow for generated projects, edit it under `github/workflows/`. It is not run here, so check changes with the test below.
 
 ## Testing the template
 
-`.github/workflows/template-test.yml` renders each variant with skelly and runs `./gradlew build` on the result. To do the same locally:
+`.github/workflows/template-test.yml` renders each variant with skelly, runs `./gradlew build` on the result and builds the image tarball with Jib. To do the same locally:
 
 ```bash
 skelly init . -dst /tmp/demo-service -no-input -set project_name=demo-service -set database=sqlite
-cd /tmp/demo-service && ./gradlew build
+cd /tmp/demo-service && ./gradlew build :server:jibBuildTar
 ```

@@ -1,22 +1,23 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/aaron-vaz/skelly/main/skelly.schema.json
 name: skelly-template-kotlin
-description: A Kotlin web service on Ktor, with optional Exposed and SQLite, Gradle, ktlint, tests, CI and releases
+description: A modular Kotlin service on Ktor, with optional Exposed and SQLite, convention plugins, Log4j, Spotless, Jib and CI
 inputs:
   project_name:
-    description: The name of the project, also used as the Gradle project and the start script (kebab-case, e.g. my-service)
+    description: The name of the project, also used as the Gradle root project and the image name (kebab-case, e.g. my-service)
   owner:
     description: The GitHub user or organisation that will own the repository
     default: aaron-vaz
   package:
-    description: The Kotlin package of {{.Inputs.project_name.Value}}, its source directories are derived from it
+    description: The base Kotlin package of {{.Inputs.project_name.Value}}, its source directories are derived from it
     default: 'io.github.{{.Inputs.owner.Value | lower | replace "-" ""}}.{{.Inputs.project_name.Value | lower | replace "-" ""}}'
   database:
-    description: Whether the service needs a database, sqlite adds Exposed with SQLite and an example items API
+    description: Whether the service needs a database, sqlite adds an items domain module with Exposed and SQLite
     default: none
     choices: [none, sqlite]
   java_version:
-    description: The JDK version to build and run with
+    description: The JDK to build and run with, limited to the versions that have a distroless Java image
     default: "21"
+    choices: ["17", "21", "25"]
 # Values for templates to use as .Env.name, derived from the inputs
 env:
   package_path: '{{replace "." "/" .Inputs.package.Value}}'
@@ -31,7 +32,9 @@ raw:
 exclude:
   - when: '{{ne .Inputs.database.Value "sqlite"}}'
     paths:
-      - src/*/kotlin/*/db
+      - modules/items
+      - server/src/jib
+      - server/src/test/kotlin/*/ItemsAssemblyTest.kt
   - paths:
       - TEMPLATE.md
       - .github

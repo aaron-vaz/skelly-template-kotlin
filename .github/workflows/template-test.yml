@@ -41,4 +41,5 @@ jobs:
 
     - name: Check the generated project
       working-directory: ${{ runner.temp }}/demo-service
-      run: ./gradlew build
+      # Formatting, the tests of every module, and the distroless image (a tarball, so no Docker is needed)
+      run: ./gradlew build :server:jibBuildTar
