@@ -7,6 +7,7 @@ Guidelines for agentic coding agents working in this repository.
 `{{.Inputs.project_name.Value}}` is a Kotlin web service on Ktor{{if eq .Inputs.database.Value "sqlite"}}, with Exposed and SQLite{{end}}.
 
 - **Language**: Kotlin, JDK {{.Inputs.java_version.Value}}
+- **JDK**: pinned in `.java-version` (CI) and `.jabbarc` ([jabba](https://github.com/Jabba-Team/jabba): `jabba use`); to change it, update both, `jvmToolchain` in `build.gradle.kts` and the Dockerfile
 - **Build**: Gradle (Kotlin DSL) with a version catalog in `gradle/libs.versions.toml`
 - **Package**: `{{.Inputs.package.Value}}`
 

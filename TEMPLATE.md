@@ -34,7 +34,7 @@ skelly init kotlin -dst ./my-service -no-input -set project_name=my-service -set
 - an `exclude` entry that removes the `db` package, with its tests, unless `database` is `sqlite`. Patterns use the template's own names, so the package directory (`{{.Env.package_path}}`) is a `*` there.
 - `rename`, which moves `github/` to `.github` when the project is generated. The workflows and `dependabot.yml` for generated projects live in `github/`, so GitHub does not run them, and Dependabot does not read them, in this repository. The real `.github/` here holds only the template's own CI.
 
-`github`, `gradlew`, `gradlew.bat` and `gradle/wrapper` are `raw`: they use `${{ }}` or `$` themselves. The JDK version reaches the workflows through `.java-version`, which `setup-java` reads, since raw files cannot use inputs.
+`github`, `gradlew`, `gradlew.bat` and `gradle/wrapper` are `raw`: they use `${{ }}` or `$` themselves. The JDK version reaches the workflows through `.java-version`, which `setup-java` reads, since raw files cannot use inputs. A `.jabbarc` (`temurin@~21` for `java_version` 21) lets [jabba](https://github.com/Jabba-Team/jabba) users run `jabba use` in the project.
 
 When you edit a workflow for generated projects, edit it under `github/workflows/`. It is not run here, so check changes with the test below.
 

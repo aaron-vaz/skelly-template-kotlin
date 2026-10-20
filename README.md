@@ -6,6 +6,8 @@ A Kotlin web service on [Ktor](https://ktor.io){{if eq .Inputs.database.Value "s
 
 Requires JDK {{.Inputs.java_version.Value}}. Gradle is provided by the wrapper.
 
+With [jabba](https://github.com/Jabba-Team/jabba), install the JDK once with `jabba install temurin@~{{.Inputs.java_version.Value}}`, then run `jabba use` in this directory: it reads `.jabbarc`.
+
 ```bash
 ./gradlew run          # start the server on http://localhost:8080
 ./gradlew test         # run the tests
