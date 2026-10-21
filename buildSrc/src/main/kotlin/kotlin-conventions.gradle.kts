@@ -1,10 +1,14 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
+import org.gradle.accessors.dm.LibrariesForLibs
+import support.javaVersion
 
 // What every module has: Kotlin on the project's JDK, warnings as errors, tests and formatting.
 plugins {
     kotlin("jvm")
     id("com.diffplug.spotless")
 }
+
+val libs = the<LibrariesForLibs>()
 
 repositories {
     mavenCentral()
@@ -29,10 +33,10 @@ tasks.test {
 configure<SpotlessExtension> {
     kotlin {
         target("src/**/*.kt")
-        ktlint(versionOf("ktlint")).setEditorConfigPath(rootProject.file(".editorconfig"))
+        ktlint(libs.versions.ktlint.get()).setEditorConfigPath(rootProject.file(".editorconfig"))
     }
     kotlinGradle {
         target("*.gradle.kts")
-        ktlint(versionOf("ktlint")).setEditorConfigPath(rootProject.file(".editorconfig"))
+        ktlint(libs.versions.ktlint.get()).setEditorConfigPath(rootProject.file(".editorconfig"))
     }
 }

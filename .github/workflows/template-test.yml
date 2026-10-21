@@ -43,3 +43,7 @@ jobs:
       working-directory: ${{ runner.temp }}/demo-service
       # Formatting, the tests of every module, and the distroless image (a tarball, so no Docker is needed)
       run: ./gradlew build :server:jibBuildTar
+
+    - name: Check buildSrc formatting
+      working-directory: ${{ runner.temp }}/demo-service
+      run: ./gradlew -p buildSrc spotlessCheck

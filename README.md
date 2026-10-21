@@ -25,6 +25,7 @@ With [jabba](https://github.com/Jabba-Team/jabba), install the JDK once with `ja
 ./gradlew :server:run     # start the server on http://localhost:8080
 ./gradlew test            # run the tests of every module
 ./gradlew spotlessApply   # fix formatting (ktlint, using .editorconfig)
+./gradlew -p buildSrc spotlessApply   # the same for buildSrc, which is a build of its own
 ./gradlew build           # formatting check, tests and the distribution
 ```
 
@@ -39,7 +40,7 @@ Everything is read from environment variables once, at startup.
 | `APP_VERSION` | `dev` | Reported by `/version`, set from the git tag in the image |
 {{if eq .Inputs.database.Value "sqlite"}}| `DATABASE_URL` | `jdbc:sqlite:{{.Inputs.project_name.Value}}.db` | SQLite database of the items module; the file is created if missing |
 {{end}}
-Logging is [Log4j 2](https://logging.apache.org/log4j/2.x/): code uses its API, and `server/src/main/resources/log4j2.xml` configures it. The SLF4J logging of Ktor and Netty is routed to it.
+Logging is [Log4j 2](https://logging.apache.org/log4j/2.x/): code uses its Kotlin API ([log4j-api-kotlin](https://logging.apache.org/log4j/kotlin/)), and `server/src/main/resources/log4j2.xml` configures it. The SLF4J logging of Ktor and Netty is routed to it.
 
 ## Endpoints
 

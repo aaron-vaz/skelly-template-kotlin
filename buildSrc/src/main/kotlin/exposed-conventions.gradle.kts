@@ -1,10 +1,14 @@
+import org.gradle.accessors.dm.LibrariesForLibs
+
 // A module that stores its data with Exposed on SQLite.
 plugins {
     id("kotlin-conventions")
 }
 
+val libs = the<LibrariesForLibs>()
+
 dependencies {
-    implementation(lib("exposed-core"))
-    implementation(lib("exposed-jdbc"))
-    implementation(lib("sqlite-jdbc"))
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.sqlite.jdbc)
 }

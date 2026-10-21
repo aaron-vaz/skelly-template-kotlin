@@ -10,11 +10,17 @@ import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class GreetingsTest {
     @Test
     fun `a greeting trims the name`() {
-        assertEquals(Greeting("Hello, Ada!"), greet("  Ada "))
+        assertEquals(Greeting("Hello, Ada!"), GreetingService().greet("  Ada "))
+    }
+
+    @Test
+    fun `a blank name is not greeted`() {
+        assertFailsWith<InvalidNameException> { GreetingService().greet("  ") }
     }
 
     // The module is tested on its own, with only its own routes, as it could be split from the service

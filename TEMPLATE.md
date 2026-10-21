@@ -10,7 +10,7 @@ A [skelly](https://github.com/aaron-vaz/skelly) template for modular Kotlin serv
 Both come with:
 
 - **Convention plugins** in `buildSrc` (`kotlin-conventions`, `ktor-conventions`, `application-conventions`, `exposed-conventions`) and one **version catalog** that the modules and the plugins share.
-- **Log4j 2** as the logging API and implementation, with the SLF4J bridge for Ktor and Netty.
+- **Log4j 2** as the logging API (through log4j-api-kotlin) and implementation, with the SLF4J bridge for Ktor and Netty.
 - **Spotless** running **ktlint**, with the rules in `.editorconfig`, and warnings as errors.
 - A **distroless image built by Jib** (no Dockerfile, no Docker needed to build a tarball), plus CI, release-please, Dependabot, an `AGENTS.md` and a `.jabbarc` for [jabba](https://github.com/Jabba-Team/jabba).
 
@@ -21,7 +21,7 @@ skelly sources add kotlin github.com/aaron-vaz/skelly-template-kotlin
 skelly init kotlin -dst ./my-service
 ```
 
-Inputs: `database` (`none` or `sqlite`, default `none`), `java_version` (`17`, `21` or `25`, default `21`: the versions with a distroless Java image), `owner` (default `aaron-vaz`), `package` (default derived from `owner` and `project_name`, e.g. `io.github.aaronvaz.myservice`) and `project_name` (required, kebab-case).
+Inputs: `database` (`none` or `sqlite`, default `none`), `java_version` (`17`, `21` or `25`, default `21`: the versions with a distroless Java image), `owner` (default `aaron-vaz`), `group` (the reversed domain you own, default `uk.co.aaronvaz`), `package` (default derived from `group` and `project_name`, e.g. `uk.co.aaronvaz.myservice`) and `project_name` (required, kebab-case).
 
 From a script or an AI agent:
 
@@ -35,7 +35,7 @@ skelly init kotlin -dst ./my-service -no-input -set project_name=my-service -set
 `.skelly.yml` uses several skelly features to produce both variants from one tree:
 
 - `choices` on `database` and `java_version`, so a typo is rejected.
-- a templated `package` default, built from `owner` and `project_name` with the `lower` and `replace` template functions, and an `env` value `package_path` (`io.github.me.app` becomes `io/github/me/app`) used in the names of the source directories.
+- a templated `package` default, built from `group` and `project_name` with the `lower` and `replace` template functions, and an `env` value `package_path` (`uk.co.me.app` becomes `uk/co/me/app`) used in the names of the source directories.
 - an `exclude` entry that removes the `items` module, the test of it in `server`, and the Jib directory for `/data`, unless `database` is `sqlite`. Patterns use the template's own names, so the package directory (`{{.Env.package_path}}`) is a `*` there. The `include` line, the dependency and the wiring are `{{if}}` blocks.
 - `rename`, which moves `github/` to `.github` when the project is generated. The workflows and `dependabot.yml` for generated projects live in `github/`, so GitHub does not run them, and Dependabot does not read them, in this repository. The real `.github/` here holds only the template's own CI.
 
