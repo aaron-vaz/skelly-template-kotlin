@@ -1,4 +1,4 @@
-import org.gradle.accessors.dm.LibrariesForLibs
+import support.libs
 import support.javaVersion
 
 // The module that assembles the others into a service, and packages it as a distroless image with Jib.
@@ -7,8 +7,6 @@ plugins {
     application
     id("com.google.cloud.tools.jib")
 }
-
-val libs = the<LibrariesForLibs>()
 
 dependencies {
     implementation(libs.ktor.server.netty)

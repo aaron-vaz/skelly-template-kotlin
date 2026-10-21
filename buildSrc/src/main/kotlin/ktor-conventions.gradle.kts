@@ -1,12 +1,10 @@
-import org.gradle.accessors.dm.LibrariesForLibs
+import support.libs
 
 // A module that serves part of the HTTP API: Ktor, JSON and the Log4j API, which is the logging facade.
 plugins {
     id("kotlin-conventions")
     kotlin("plugin.serialization")
 }
-
-val libs = the<LibrariesForLibs>()
 
 dependencies {
     api(libs.ktor.server.core)

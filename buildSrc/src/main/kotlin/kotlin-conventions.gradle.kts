@@ -1,5 +1,5 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import org.gradle.accessors.dm.LibrariesForLibs
+import support.libs
 import support.javaVersion
 
 // What every module has: Kotlin on the project's JDK, warnings as errors, tests and formatting.
@@ -7,8 +7,6 @@ plugins {
     kotlin("jvm")
     id("com.diffplug.spotless")
 }
-
-val libs = the<LibrariesForLibs>()
 
 repositories {
     mavenCentral()
