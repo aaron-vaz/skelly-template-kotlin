@@ -70,3 +70,7 @@ docker run --rm -p 8080:8080 {{if eq .Inputs.database.Value "sqlite"}}-v {{.Inpu
 The database lives in the `/data` volume of the image, which any user can write to, as the image does not run as root.
 {{end}}
 Pushing a `v*` tag publishes the image to `ghcr.io/{{.Inputs.owner.Value | lower}}/{{.Inputs.project_name.Value}}`.
+
+## Releases
+
+`release-please` opens a release PR from the conventional commits on `main`, and merging it creates the tag. It needs a repository secret named `RELEASE_PLEASE_PAT`: a personal access token that can write contents and pull requests. The default `GITHUB_TOKEN` would not do, because a tag it creates does not trigger the image workflow.

@@ -25,7 +25,9 @@ jobs:
 
       # Jib builds the distroless image without a Docker daemon and pushes it to ghcr.io
       - name: Build and push the image
-        run: ./gradlew :server:jib -Pversion=${{ github.ref_name }}
+        # The tag goes through the environment, not into the script: a ref name can contain shell syntax
+        run: ./gradlew :server:jib "-Pversion=$TAG"
         env:
+          TAG: ${{ github.ref_name }}
           REGISTRY_USERNAME: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
